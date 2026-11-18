@@ -6,11 +6,22 @@ on:
       - main
   workflow_dispatch:
 jobs:
-  Publish-Website:
-    name: Publish-Website
+  PHP-Lint:
+    name: PHP-Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
+      - name: Check PHP syntax
+        run: |
+          set -e
+          php -v
+          find . -path ./.git -prune -o -name '*.php' -print0 | xargs -0 -r -n1 php -l
+  Publish-Website:
+    name: Publish-Website
+    needs: PHP-Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - name: Upload the artifact
         uses: actions/upload-artifact@v4
         with:
